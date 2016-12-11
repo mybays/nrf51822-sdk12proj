@@ -34,8 +34,6 @@
 #define MAX_TEST_DATA_BYTES     (15U)                /**< max number of test bytes to be used for tx and rx. */
 #define UART_TX_BUF_SIZE 256                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE 256                         /**< UART RX buffer size. */
-static const uint8_t leds_list[LEDS_NUMBER] = LEDS_LIST;
-
 
 void uart_error_handle(app_uart_evt_t * p_event)
 {
@@ -57,7 +55,7 @@ void uart_error_handle(app_uart_evt_t * p_event)
 static void show_error(void)
 {
 
-    LEDS_ON(LEDS_MASK);
+    bsp_board_leds_on();
     while (true)
     {
         // Do nothing.
@@ -100,9 +98,10 @@ static void uart_loopback_test()
  */
 int main(void)
 {
-    LEDS_CONFIGURE(LEDS_MASK);
-    LEDS_OFF(LEDS_MASK);
     uint32_t err_code;
+
+    bsp_board_leds_init();
+
     const app_uart_comm_params_t comm_params =
       {
           RX_PIN_NUMBER,
@@ -118,7 +117,7 @@ int main(void)
                          UART_RX_BUF_SIZE,
                          UART_TX_BUF_SIZE,
                          uart_error_handle,
-                         APP_IRQ_PRIORITY_LOW,
+                         APP_IRQ_PRIORITY_LOWEST,
                          err_code);
 
     APP_ERROR_CHECK(err_code);
@@ -139,11 +138,6 @@ int main(void)
             while (true)
             {
                 // Do nothing.
-              for (int i = 0; i < LEDS_NUMBER; i++)
-              {
-                LEDS_INVERT(1 << leds_list[i]);
-                nrf_delay_ms(500);
-              }
             }
         }
     }
